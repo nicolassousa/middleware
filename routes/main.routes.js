@@ -1,10 +1,13 @@
 const router = require('express').Router();
-const { default: Hubspot } = require('hubspot');
 const controllerhubspot = require('../controllers/hubspot.controller.js');
+const controllerJasmin = require('../controllers/jasmin.controller');
 
-
-router.post('/HubSpot/', controllerhubspot.createClient);
+//HUBSPOT
+router.post('/Hubspot/', controllerhubspot.createClient);
 router.post('/HubSpot/update/', controllerhubspot.updateClient);
 router.post('/HubSpot/createTicket', controllerhubspot.createTicket);
+
+//JASMIN
+router.post('/Jasmin/registarCompra', controllerJasmin.registarCompra);
 
 module.exports = router;

@@ -62,17 +62,13 @@ function createClient(request, response) {
             });
         } else {
             return response.status(400).json({
-                error: res.body
+                message: res.body
             });
         }
     })
 }
 
-function updateClient(request, response) {
-
-    const senhasCompradas =  parseInt(request.body.senhasCompradas);
-    const email = request.body.email;
-
+function updateClient(email, senhasCompradas, callback) {
 
     let options = {
         headers: {
@@ -114,18 +110,20 @@ function updateClient(request, response) {
 
             req.post(options1, (err1, res1) => {
                 if (!err1 && res1.statusCode == 204) {
-                    return response.status(200).json({
-                        message: "success"
+                    callback({
+                        'statusCode': res.statusCode,
+                        'body': "success"
                     });
                 } else {
-                    return response.status(400).json({
-                        error: res1.body
+                    callback({
+                        'statusCode': res.statusCode,
+                        'body': JSON.parse(res.body)
                     });
                 }
             })
         } else {
             return response.status(400).json({
-                error: res.body
+                message: res.body
             });
         }
     })
@@ -202,19 +200,19 @@ function createTicket(request, response) {
                             });
                         } else {
                             return response.status(400).json({
-                                error: res1
+                                message: res1
                             });
                         }
                     })
                 } else {
                     return response.status(400).json({
-                        error: res0.body
+                        message: res0.body
                     });
                 }
             })
         } else {
             return response.status(400).json({
-                error: res.body
+                message: res.body
             });
         }
     })
@@ -269,18 +267,52 @@ function gastarSenha(request, response) {
                     });
                 } else {
                     return response.status(400).json({
-                        error: res1.body
+                        message: res1.body
                     });
                 }
             })
         } else {
             return response.status(400).json({
-                error: res.body
+                message: res.body
             });
         }
     })
 }
 
+function getClientByEmail(email, callback) {
+
+    let options = {
+        url: `https://api.hubapi.com/contacts/v1/contact/email/${email}/profile?hapikey=${ChaveApi}`
+    }
+    req.get(options, (err, res) => {
+        if (!err) {
+            if (res.statusCode == 200) {
+                let user = JSON.parse(res.body);
+                let data = user.properties;
+
+                const result = {
+                    'nome': data.firstname.value + " " + data.lastname.value,
+                    'email': data.email.value,
+                    'nif': data.nif.value
+                }
+                callback({
+                    'user': result
+                });
+            } else {
+                callback({
+                    'statusCode': res.statusCode,
+                    'body': JSON.parse(res.body)
+                })
+            }
+        } else {
+            console.log(err);
+            callback({
+                'statusCode': 400,
+                'body': 'erro'
+            })
+        }
+    })
+}
 
 
 
@@ -288,5 +320,6 @@ module.exports = {
     createClient: createClient,
     updateClient: updateClient,
     createTicket: createTicket,
-    gastarSenha: gastarSenha
+    gastarSenha: gastarSenha,
+    getClientByEmail: getClientByEmail
 };
