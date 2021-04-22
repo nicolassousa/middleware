@@ -180,10 +180,77 @@ function getToken(callback) {
     })
 }
 
+function acertoStock(idProduto, access_token, callback){
+    const id = idProduto;
+    const data = new Date();
+    const ano = data.getFullYear();
+    const mes = data.getMonth() + 1;
+    const dia = data.getDate();
+    const hora = data.getHours();
+    const min = data.getMinutes();
+    const sec = data.getSeconds();
+    const itemAdjustmentKey = ano + "_" + mes + "_" + dia + "_" + hora + "_" + min + "_" + sec;
+    const documentDate = new Date().toISOString();
+    const postingDate = new Date().toISOString();
+    const warehouse = '01';
+    const company = 'RUM';
+    const adjustmentReason = '10';
+
+    let numeroSenhas;
+    if(id == 'PACKSENHAS'){
+        numeroSenhas = 10;
+    } else{
+        numeroSenhas = 1;
+    }
+
+    let documentLines = [{
+        'quantity' : numeroSenhas,
+        'unitPrice': 2.50,
+        'unit': 'UN',
+        'materialsItem': 'SENHASDISPONIVEIS'
+    }]
+
+    let json = {
+        'itemAdjustmentKey': itemAdjustmentKey,
+        'documentDate': documentDate,
+        'postingDate': postingDate,
+        'warehouse': warehouse,
+        'company': company,
+        'adjustmentReason': adjustmentReason,
+        'documentLines': documentLines
+    }
+    
+    let options = {
+        headers: {
+            'Authorization': `Bearer ${access_token}`,
+            'Content-Type': 'application/json; charset=utf-8',
+            'Content-Length': JSON.stringify(json).length
+        },
+        url: `${url_jasmin}materialsManagement/itemAdjustments`,
+        body: JSON.stringify(json)
+    }
+
+    req.post(options, (err, res) => {
+        if (!err && res.statusCode == 201) {
+            callback({
+                'statusCode': res.statusCode,
+                'body': "success"
+            });
+        } else {
+            callback({
+                'statusCode': res.statusCode,
+                'body': JSON.parse(res.body)
+            });
+        }
+    })
+
+}
+
 module.exports = {
     insertClient:insertClient,
     checkUser: checkUser,
     getTypeInvoice: getTypeInvoice,
     getProducts: getProducts,
+    acertoStock: acertoStock,
     getToken: getToken
 };

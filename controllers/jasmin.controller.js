@@ -103,14 +103,23 @@ function registarCompra(request, response) {
                                                     } else{
                                                         numeroSenhas = 1;
                                                     }
-                                                    hubspot.updateClient(email, numeroSenhas, (res) => {
-                                                        if(res.statusCode == 204){
-                                                            return response.status(200).json({
-                                                                message: "success"
-                                                            });
-                                                        }
-                                                        else{
-                                                            return response.status(200).json({
+
+                                                    jasminAux.acertoStock(IdProduto, access_token, (res) => {
+                                                        if(res.statusCode == 201){
+                                                            hubspot.updateClient(email, numeroSenhas, (res) => {
+                                                                if(res.statusCode == 204){
+                                                                    return response.status(200).json({
+                                                                        message: "success"
+                                                                    });
+                                                                }
+                                                                else{
+                                                                    return response.status(400).json({
+                                                                        message: res.body
+                                                                    });
+                                                                }
+                                                            })
+                                                        }else{
+                                                            return response.status(400).json({
                                                                 message: res.body
                                                             });
                                                         }
@@ -190,14 +199,23 @@ function registarCompra(request, response) {
                                             } else {
                                                 numeroSenhas = 1;
                                             }
-                                            hubspot.updateClient(email, numeroSenhas, (res) => {
-                                                if (res.statusCode == 204) {
-                                                    return response.status(200).json({
-                                                        message: "success"
-                                                    });
-                                                }
-                                                else {
-                                                    return response.status(200).json({
+                                            
+                                            jasminAux.acertoStock(IdProduto, access_token, (res) => {
+                                                if(res.statusCode == 201){
+                                                    hubspot.updateClient(email, numeroSenhas, (res) => {
+                                                        if(res.statusCode == 204){
+                                                            return response.status(200).json({
+                                                                message: "success"
+                                                            });
+                                                        }
+                                                        else{
+                                                            return response.status(400).json({
+                                                                message: res.body
+                                                            });
+                                                        }
+                                                    })
+                                                }else{
+                                                    return response.status(400).json({
                                                         message: res.body
                                                     });
                                                 }
@@ -234,6 +252,8 @@ function registarCompra(request, response) {
         }
     })
 }
+
+
 
 module.exports = {
     registarCompra: registarCompra
