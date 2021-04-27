@@ -2,7 +2,6 @@ const router = require('express').Router();
 const controllerhubspot = require('../controllers/hubspot.controller.js');
 const controllerJasmin = require('../controllers/jasmin.controller');
 const controllerauxJasmin = require('../controllers/jasmin.aux.controller');
-const adyen = require('../controllers/adyen.encrypt');
 
 //HUBSPOT
 router.post('/Hubspot/', controllerhubspot.createClient);
