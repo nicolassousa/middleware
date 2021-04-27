@@ -217,7 +217,7 @@ function registarCompra(request, response) {
                                                                     const pdf = res.body;
                                                                     jasminAux.sendPDF(email, pdf);
                                                                     return response.status(200).json({
-                                                                        message: res.body
+                                                                        message: 'success'
                                                                     });
                                                                 }
                                                                 else{
