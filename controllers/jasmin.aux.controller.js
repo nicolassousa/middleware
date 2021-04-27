@@ -2,6 +2,7 @@ const req = require('request');
 const hubspotController = require('./../controllers/hubspot.controller');
 const querystring = require('querystring');
 const url_jasmin = 'https://my.jasminsoftware.com/api/252011/252011-0001/';
+const nodemailer = require('nodemailer');
 
 function insertClient(email, access_token, callback) {
     hubspotController.getClientByEmail(email, (res1) => {
@@ -63,7 +64,6 @@ function insertClient(email, access_token, callback) {
 }
 
 function checkUser(email, access_token, callback) {
-
     hubspotController.getClientByEmail(email, (res1) => {
         if (res1.user) {
 
@@ -128,7 +128,7 @@ function getTypeInvoice(callback) {
 }
 
 function getProducts(access_token, callback) {
-    
+
     let options = {
         headers: {
             'Authorization': `Bearer ${access_token}`
@@ -180,7 +180,7 @@ function getToken(callback) {
     })
 }
 
-function acertoStock(idProduto, access_token, callback){
+function acertoStock(idProduto, access_token, callback) {
     const id = idProduto;
     const data = new Date();
     const ano = data.getFullYear();
@@ -197,14 +197,14 @@ function acertoStock(idProduto, access_token, callback){
     const adjustmentReason = '10';
 
     let numeroSenhas;
-    if(id == 'PACKSENHAS'){
+    if (id == 'PACKSENHAS') {
         numeroSenhas = 10;
-    } else{
+    } else {
         numeroSenhas = 1;
     }
 
     let documentLines = [{
-        'quantity' : numeroSenhas,
+        'quantity': numeroSenhas,
         'unitPrice': 2.50,
         'unit': 'UN',
         'materialsItem': 'SENHASDISPONIVEIS'
@@ -219,7 +219,7 @@ function acertoStock(idProduto, access_token, callback){
         'adjustmentReason': adjustmentReason,
         'documentLines': documentLines
     }
-    
+
     let options = {
         headers: {
             'Authorization': `Bearer ${access_token}`,
@@ -246,11 +246,195 @@ function acertoStock(idProduto, access_token, callback){
 
 }
 
+//Função utilizada para registar consumo de uma senha, adiçao ao inventario de senhas utilizadas e redução ao numero de senhas disponíveis
+function registarConsumo(access_token, callback) {
+    const data = new Date();
+    const ano = data.getFullYear();
+    const mes = data.getMonth() + 1;
+    const dia = data.getDate();
+    const hora = data.getHours();
+    const min = data.getMinutes();
+    const sec = data.getSeconds();
+    const itemAdjustmentKey = ano + "_" + mes + "_" + dia + "_" + hora + "_" + min + "_" + sec;
+    const documentDate = new Date().toISOString();
+    const postingDate = new Date().toISOString();
+    const warehouse = '01';
+    const company = 'RUM';
+    const adjustmentReason = '01';
+
+    let documentLines = [{
+        'quantity': 1,
+        'unitPrice': 2.50,
+        'unit': 'UN',
+        'materialsItem': 'SENHASDISPONIVEIS'
+    }]
+
+    let json = {
+        'itemAdjustmentKey': itemAdjustmentKey,
+        'documentDate': documentDate,
+        'postingDate': postingDate,
+        'warehouse': warehouse,
+        'company': company,
+        'adjustmentReason': adjustmentReason,
+        'documentLines': documentLines
+    }
+
+    let options = {
+        headers: {
+            'Authorization': `Bearer ${access_token}`,
+            'Content-Type': 'application/json; charset=utf-8',
+            'Content-Length': JSON.stringify(json).length
+        },
+        url: `${url_jasmin}materialsManagement/itemAdjustments`,
+        body: JSON.stringify(json)
+    }
+
+    req.post(options, (err, res) => {
+        const data = new Date();
+        const ano = data.getFullYear();
+        const mes = data.getMonth() + 1;
+        const dia = data.getDate();
+        const hora = data.getHours();
+        const min = data.getMinutes();
+        const sec = data.getSeconds();
+        const itemAdjustmentKey = ano + "_" + mes + "_" + dia + "_" + hora + "_" + min + "_" + sec;
+        const documentDate = new Date().toISOString();
+        const postingDate = new Date().toISOString();
+        const warehouse = '01';
+        const company = 'RUM';
+        const adjustmentReason = '10';
+
+        let documentLines = [{
+            'quantity': 1,
+            'unitPrice': 2.50,
+            'unit': 'UN',
+            'materialsItem': 'SENHASGASTAS'
+        }]
+
+        let json = {
+            'itemAdjustmentKey': itemAdjustmentKey,
+            'documentDate': documentDate,
+            'postingDate': postingDate,
+            'warehouse': warehouse,
+            'company': company,
+            'adjustmentReason': adjustmentReason,
+            'documentLines': documentLines
+        }
+
+        let options = {
+            headers: {
+                'Authorization': `Bearer ${access_token}`,
+                'Content-Type': 'application/json; charset=utf-8',
+                'Content-Length': JSON.stringify(json).length
+            },
+            url: `${url_jasmin}materialsManagement/itemAdjustments`,
+            body: JSON.stringify(json)
+        }
+
+        req.post(options, (err, res) => {
+
+            if (!err && res.statusCode == 201) {
+                callback({
+                    'statusCode': res.statusCode,
+                    'body': "success"
+                });
+            } else {
+                callback({
+                    'statusCode': res.statusCode,
+                    'body': JSON.parse(res.body)
+                });
+            }
+        })
+    })
+
+}
+
+function getPDFDocument(access_token, idFatura, callback) {
+
+    const id = idFatura.replace(/['"]+/g, '');
+    let options = {
+        headers: {
+            'Authorization': `Bearer ${access_token}`,
+            //'Content-Type': 'application/octet-stream'
+        },
+        encoding: null,
+        url: `${url_jasmin}/billing/invoices/${id}/printOriginal`
+    }
+    req.get(options, (err, res) => {
+        if (!err && res.statusCode == 200) {
+            console.log(res.body);
+            callback({
+                'statusCode': res.statusCode,
+                'body': res.body
+            });
+        } else {
+            callback({
+                'statusCode': res.statusCode,
+                'body': JSON.parse(res.body)
+            });
+        }
+    })
+}
+
+function sendPDF(email, pdf) {
+    var transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+            user: 'refeicoesum@gmail.com',
+            pass: 'miegsi2021'
+        }
+    });
+
+    var data = new Date();
+    var hora = data.getHours();
+    let parteDoDia;
+
+    if (hora >= 6 && hora <= 11) {
+        parteDoDia = "Bom dia.";
+    }
+    if (hora >= 12 && hora <= 19) {
+        parteDoDia = "Boa Tarde.";
+    }
+    if (hora >= 20 && hora <= 23 || (hora >= 0 && hora <= 5)) {
+        parteDoDia = "Boa Noite.";
+    }
+    var mensagemResultado = "Fatura Compra Senhas.\n";
+    mensagemResultado += "Segue em baixo a fatura da sua compra de senhas na aplicação Refeicoes UM.\n"
+
+    var text = parteDoDia + mensagemResultado;
+
+    var mailOptions = {
+        from: 'refeicoesum@gmail.com', // sender address
+        to: email, // list of receivers
+        subject: 'Fatura de Compra de Senhas - Jasmin', // Subject line
+        text: text,
+        attachments: [
+            {   // encoded string as an attachment
+                filename: 'Fatura.pdf',
+                content: pdf,
+                encoding: 'data:application/octet-stream'
+            }
+        ]
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Message sent: ' + info.response);
+        };
+    });
+
+}
+
 module.exports = {
     insertClient:insertClient,
     checkUser: checkUser,
     getTypeInvoice: getTypeInvoice,
     getProducts: getProducts,
     acertoStock: acertoStock,
+    registarConsumo: registarConsumo,
+    getPDFDocument: getPDFDocument,
+    sendPDF: sendPDF,
     getToken: getToken
 };

@@ -1,4 +1,5 @@
 const Hubspot = require('hubspot');
+var sanitizer = require('sanitize')();
 const req = require('request');
 var sanitizer = require('sanitize')();
 const ChaveApi = 'c2261c3d-aaa4-4684-917d-ea2dd1852309';
@@ -130,7 +131,6 @@ function updateClient(email, senhasCompradas, callback) {
 }
 
 function createTicket(request, response) {
-
     const assunto =  request.body.assunto;
     const descricao = request.body.descricao;
     const email = request.body.email;
@@ -218,27 +218,23 @@ function createTicket(request, response) {
     })
 }
 
-function gastarSenha(request, response) {
-    const email = request.body.email;
-
+function gastarSenha(email, callback) {
 
     let options = {
         headers: {
             'Content-Type': 'application/json; charset=utf-8'
         },
-        url: `https://api.hubapi.com/contacts/v1/contact/email/${email}/profile?hapikey=${ChaveApi}`,
-        //body: JSON.stringify(json)
+        url: `https://api.hubapi.com/contacts/v1/contact/email/${email}/profile?hapikey=${ChaveApi}`
     }
 
     req.get(options, (err, res) => {
         if (!err && res.statusCode == 200) {
-            
             const body = JSON.parse(res.body).properties;
             let senhasDisponiveis = parseInt(body.senhasdisponiveis.value);
             let senhasGastas = parseInt(body.senhasgastas.value);
-            
-            senhasGastas -= 1;
-            senhasDisponiveis += senhasCompradas;
+
+            senhasDisponiveis -= 1;
+            senhasGastas += 1;
 
             const properties = [{
                 property: 'senhasGastas',
@@ -255,22 +251,39 @@ function gastarSenha(request, response) {
             let options1 = {
                 headers: {
                     'Content-Type': 'application/json; charset=utf-8'
-            },
+                },
                 url: `https://api.hubapi.com/contacts/v1/contact/email/${email}/profile?hapikey=${ChaveApi}`,
                 body: JSON.stringify(json)
             }
 
             req.post(options1, (err1, res1) => {
-                if (!err1 && res1.statusCode == 204) {
-                    return response.status(200).json({
-                        message: "success"
-                    });
-                } else {
-                    return response.status(400).json({
-                        message: res1.body
-                    });
-                }
+                callback({
+                    'statusCode': res1.statusCode,
+                    'body': res.body
+                })
             })
+        } else{
+            callback({
+                'statusCode': res.statusCode,
+                'body': res.body
+            })
+        }
+    })
+}
+
+function getClient(request, response) {
+    const email = request.params.email;
+
+    let options = {
+        url: `https://api.hubapi.com/contacts/v1/contact/email/${email}/profile?hapikey=${ChaveApi}`
+    }
+    req.get(options, (err, res) => {
+        if (!err && res.statusCode == 200) {
+            let user = JSON.parse(res.body);
+            let data = user.properties;
+            return response.status(200).json({
+                message: data
+            });
         } else {
             return response.status(400).json({
                 message: res.body
@@ -279,6 +292,7 @@ function gastarSenha(request, response) {
     })
 }
 
+//Função auxiliar com callback para auxiliar o jasmin
 function getClientByEmail(email, callback) {
 
     let options = {
@@ -314,12 +328,11 @@ function getClientByEmail(email, callback) {
     })
 }
 
-
-
 module.exports = {
     createClient: createClient,
     updateClient: updateClient,
     createTicket: createTicket,
     gastarSenha: gastarSenha,
-    getClientByEmail: getClientByEmail
+    getClientByEmail: getClientByEmail,
+    getClient: getClient
 };

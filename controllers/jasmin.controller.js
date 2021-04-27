@@ -2,6 +2,7 @@ const jasminAux = require('./../controllers/jasmin.aux.controller');
 const req = require('request');
 const url_jasmin = 'https://my.jasminsoftware.com/api/252011/252011-0001/';
 const hubspot = require('./../controllers/hubspot.controller');
+const hubspotController = require('./../controllers/hubspot.controller');
 
 function registarCompra(request, response) {
     const email = request.body.email;
@@ -107,15 +108,21 @@ function registarCompra(request, response) {
                                                     jasminAux.acertoStock(IdProduto, access_token, (res) => {
                                                         if(res.statusCode == 201){
                                                             hubspot.updateClient(email, numeroSenhas, (res) => {
-                                                                if(res.statusCode == 204){
-                                                                    return response.status(200).json({
-                                                                        message: "success"
-                                                                    });
-                                                                }
-                                                                else{
-                                                                    return response.status(400).json({
-                                                                        message: res.body
-                                                                    });
+                                                                if(res.statusCode == 200){
+                                                                    jasminAux.getPDFDocument(access_token, idFatura,(res) => {
+                                                                        if(res.statusCode == 200){
+                                                                            const pdf = res.body;
+                                                                            jasminAux.sendPDF(email, pdf);
+                                                                            return response.status(200).json({
+                                                                                message: 'success'
+                                                                            });
+                                                                        }
+                                                                        else{
+                                                                            return response.status(400).json({
+                                                                                message: res.body
+                                                                            });
+                                                                        }
+                                                                    })
                                                                 }
                                                             })
                                                         }else{
@@ -193,6 +200,7 @@ function registarCompra(request, response) {
             
                                     req.post(options, (err, res) => {
                                         if (!err && res.statusCode == 201) {
+                                            const idFatura = res.body;
                                             let numeroSenhas;
                                             if (IdProduto == 'PACKSENHAS') {
                                                 numeroSenhas = 10;
@@ -203,10 +211,21 @@ function registarCompra(request, response) {
                                             jasminAux.acertoStock(IdProduto, access_token, (res) => {
                                                 if(res.statusCode == 201){
                                                     hubspot.updateClient(email, numeroSenhas, (res) => {
-                                                        if(res.statusCode == 204){
-                                                            return response.status(200).json({
-                                                                message: "success"
-                                                            });
+                                                        if(res.statusCode == 200){
+                                                            jasminAux.getPDFDocument(access_token, idFatura,(res) => {
+                                                                if(res.statusCode == 200){
+                                                                    const pdf = res.body;
+                                                                    jasminAux.sendPDF(email, pdf);
+                                                                    return response.status(200).json({
+                                                                        message: res.body
+                                                                    });
+                                                                }
+                                                                else{
+                                                                    return response.status(400).json({
+                                                                        message: res.body
+                                                                    });
+                                                                }
+                                                            })
                                                         }
                                                         else{
                                                             return response.status(400).json({
@@ -244,7 +263,6 @@ function registarCompra(request, response) {
                 }
             })
         } else {
-            console.log("erro");
             callback({
                 'statusCode': res.statusCode,
                 'body': res.body
@@ -253,8 +271,32 @@ function registarCompra(request, response) {
     })
 }
 
-
+function consumirSenha(request, response){
+    const email = request.body.email;
+    hubspotController.gastarSenha(email , (res) => {
+        if(res.statusCode == 204){
+            jasminAux.getToken((res) => {
+                if (res.access_token) {
+                    const access_token = res.access_token;
+                
+                    jasminAux.registarConsumo(access_token, (res) => {
+                        if (res.statusCode == 201) {
+                            return response.status(200).json({
+                                message: 'success'
+                            })
+                        } else {
+                            return response.status(400).json({
+                                message: res.body
+                            })
+                        }
+                    })
+                }
+            })
+        }
+    })
+}
 
 module.exports = {
-    registarCompra: registarCompra
+    registarCompra: registarCompra,
+    consumirSenha: consumirSenha
 }

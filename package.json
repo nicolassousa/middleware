@@ -6,12 +6,18 @@
   "scripts": {},
   "author": "",
   "dependencies": {
+    "@adyen/api-library": "^7.0.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-sanitizer": "^1.0.5",
     "express-validator": "^6.10.0",
     "express.js": "^1.0.0",
     "hubspot": "^2.3.14",
-    "sanitize": "^2.1.0"
+    "node-bignumber": "^1.2.1",
+    "nodemailer": "^6.5.0",
+    "rsa-key": "0.0.6",
+    "sanitize": "^2.1.0",
+    "sjcl": "^1.0.8",
+    "sjcl-codec": "^0.1.1"
   }
 }
