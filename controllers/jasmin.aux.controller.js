@@ -41,9 +41,7 @@ function insertClient(email, access_token, callback) {
                         if (!err && res.statusCode == 200) {
                             callback({
                                 'statusCode': res.statusCode,
-                                'body': {
-                                    customer_id: JSON.parse(res.body)
-                                }
+                                'body': JSON.parse(res.body)
                             })
                         } else {
                             callback({
