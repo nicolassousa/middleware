@@ -86,8 +86,6 @@ function registarCompra(request, response) {
                                                 }
                                             }
 
-                                            console.log(json);
-
                                             let options = {
                                                 headers: {
                                                     'Authorization': `Bearer ${access_token}`,
@@ -109,7 +107,6 @@ function registarCompra(request, response) {
                                                     }
 
                                                     jasminAux.acertoStock(IdProduto, access_token, (res) => {
-                                                        console.log("ACERTAR STOCK" + res);
                                                         if(res.statusCode == 201){
                                                             hubspot.updateClient(email, numeroSenhas, (res) => {
                                                                 if(res.statusCode == 200){
