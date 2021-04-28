@@ -86,6 +86,8 @@ function registarCompra(request, response) {
                                                 }
                                             }
 
+                                            console.log(json);
+
                                             let options = {
                                                 headers: {
                                                     'Authorization': `Bearer ${access_token}`,
@@ -97,6 +99,7 @@ function registarCompra(request, response) {
                                             }
                     
                                             req.post(options, (err, res) => {
+                                                const idFatura = res.body;
                                                 if (!err && res.statusCode == 201) {
                                                     let numeroSenhas;
                                                     if(IdProduto == 'PACKSENHAS'){
@@ -106,6 +109,7 @@ function registarCompra(request, response) {
                                                     }
 
                                                     jasminAux.acertoStock(IdProduto, access_token, (res) => {
+                                                        console.log("ACERTAR STOCK" + res);
                                                         if(res.statusCode == 201){
                                                             hubspot.updateClient(email, numeroSenhas, (res) => {
                                                                 if(res.statusCode == 200){

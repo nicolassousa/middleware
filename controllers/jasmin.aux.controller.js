@@ -3,6 +3,7 @@ const hubspotController = require('./../controllers/hubspot.controller');
 const querystring = require('querystring');
 const url_jasmin = 'https://my.jasminsoftware.com/api/252011/252011-0001/';
 const nodemailer = require('nodemailer');
+const { SSL_OP_ALLOW_UNSAFE_LEGACY_RENEGOTIATION } = require('constants');
 
 function insertClient(email, access_token, callback) {
     hubspotController.getClientByEmail(email, (res1) => {
@@ -60,6 +61,7 @@ function insertClient(email, access_token, callback) {
         }
     })
 }
+
 
 function checkUser(email, access_token, callback) {
     hubspotController.getClientByEmail(email, (res1) => {

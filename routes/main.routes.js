@@ -12,5 +12,6 @@ router.get('/Hubspot/getClient/:email', controllerhubspot.getClient);
 //JASMIN
 router.post('/Jasmin/registarCompra', controllerJasmin.registarCompra);
 router.post('/Jasmin/consumirSenha', controllerJasmin.consumirSenha);
+router.post('/Jasmin/Teste', controllerauxJasmin.insertClient);
 
 module.exports = router;
