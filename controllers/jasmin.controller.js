@@ -257,23 +257,23 @@ function registarCompra(request, response) {
 
                     })
                 } else {
-                    callback({
-                        'statusCode': res.statusCode,
-                        'body': res.body
+                    return response.status(400).json({
+                        message: res.body
                     })
                 }
             })
         } else {
-            callback({
-                'statusCode': res.statusCode,
-                'body': res.body
+            return response.status(400).json({
+                message: res.body
             })
         }
     })
 }
 
 function consumirSenha(request, response){
-    const email = request.body.email;
+    var path = require('path');
+    const email = request.params.email;
+
     hubspotController.gastarSenha(email , (res) => {
         if(res.statusCode == 204){
             jasminAux.getToken((res) => {
@@ -282,9 +282,7 @@ function consumirSenha(request, response){
                 
                     jasminAux.registarConsumo(access_token, (res) => {
                         if (res.statusCode == 201) {
-                            return response.status(200).json({
-                                message: 'success'
-                            })
+                            return response.sendFile(path.resolve('Success_Page.html'));
                         } else {
                             return response.status(400).json({
                                 message: res.body

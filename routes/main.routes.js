@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const controllerhubspot = require('../controllers/hubspot.controller.js');
 const controllerJasmin = require('../controllers/jasmin.controller');
-const controllerauxJasmin = require('../controllers/jasmin.aux.controller');
+const controllerMoloni = require('../controllers/moloni.controller');
 
 //HUBSPOT
 router.post('/Hubspot/', controllerhubspot.createClient);
@@ -11,7 +11,9 @@ router.get('/Hubspot/getClient/:email', controllerhubspot.getClient);
 
 //JASMIN
 router.post('/Jasmin/registarCompra', controllerJasmin.registarCompra);
-router.post('/Jasmin/consumirSenha', controllerJasmin.consumirSenha);
-router.post('/Jasmin/Teste', controllerauxJasmin.insertClient);
+router.get('/Jasmin/consumirSenha/:email', controllerJasmin.consumirSenha);
+
+//MOLONI
+router.post('/Moloni/registarEncomenda', controllerMoloni.registarEncomenda);
 
 module.exports = router;
