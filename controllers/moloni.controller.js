@@ -78,6 +78,20 @@ function registarEncomenda(request, response){
                                     req.post(options, (err, res) => {
                                         if (!err && res.statusCode == 200) {
                                             const document_id = JSON.parse(res.body).document_id;
+
+                                            moloniauxcontroller.getPDFLink(document_id, access_token, (res) =>{
+                                                if(res.url){
+                                                    moloniauxcontroller.sendPDF(email, res.url);
+                                                    return response.status(200).json({
+                                                        message: 'success'
+                                                    });
+                                                }else{
+                                                    return response.status(400).json({
+                                                        message: res
+                                                    });
+                                                }
+                                            })
+
                                         } else {
                                             return response.status(400).json({
                                                 message: res
@@ -101,21 +115,35 @@ function registarEncomenda(request, response){
                                                         'status': 1,
                                                         'products': productsSold
                                                     };
+                                                    console.log(json);
                 
                                                     let options = {
                                                         headers: {
                                                             'Content-Type': 'application/json; charset=utf-8'
                                                         },
-                                                        url: `https://api.moloni.pt/v1/purchaseOrder/insert/?access_token=${access_token}`,
-                                                        body: json
+                                                        url: `https://api.moloni.pt/v1/purchaseOrder/insert/?access_token=${access_token}&json=true`,
+                                                        body: JSON.stringify(json)
                                                     }
                                                     req.post(options, (err, res) => {
                                                         if (!err && res.statusCode == 200) {
-                                                                const document_id = JSON.parse(res.body).document_id;
-                                                                console.log(document_id);
+                                                            const document_id = JSON.parse(res.body).document_id;
+                
+                                                            moloniauxcontroller.getPDFLink(document_id, access_token, (res) =>{
+                                                                if(res.url){
+                                                                    moloniauxcontroller.sendPDF(email, res.url);
+                                                                    return response.status(200).json({
+                                                                        message: 'success'
+                                                                    });
+                                                                }else{
+                                                                    return response.status(400).json({
+                                                                        message: res
+                                                                    });
+                                                                }
+                                                            })
+                
                                                         } else {
                                                             return response.status(400).json({
-                                                                message: res.body
+                                                                message: res
                                                             });
                                                         }
                                                     })

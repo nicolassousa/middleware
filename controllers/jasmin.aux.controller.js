@@ -400,7 +400,7 @@ function sendPDF(email, pdf) {
     if (hora >= 20 && hora <= 23 || (hora >= 0 && hora <= 5)) {
         parteDoDia = "Boa Noite.";
     }
-    var mensagemResultado = "Fatura Compra Senhas.\n";
+    var mensagemResultado = " Fatura Compra Senhas.\n";
     mensagemResultado += "Segue em baixo a fatura da sua compra de senhas na aplicação Refeicoes UM.\n"
 
     var text = parteDoDia + mensagemResultado;

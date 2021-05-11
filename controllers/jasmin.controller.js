@@ -284,9 +284,7 @@ function consumirSenha(request, response){
                         if (res.statusCode == 201) {
                             return response.sendFile(path.resolve('Success_Page.html'));
                         } else {
-                            return response.status(400).json({
-                                message: res.body
-                            })
+                            return response.sendFile(path.resolve('Unsuccess_Page.html'));
                         }
                     })
                 }
