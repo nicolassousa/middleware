@@ -295,6 +295,5 @@ function consumirSenha(request, response){
 
 module.exports = {
     registarCompra: registarCompra,
-    enviarPDFEmail: enviarPDFEmail,
     consumirSenha: consumirSenha
 }
