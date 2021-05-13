@@ -115,8 +115,8 @@ function registarCompra(request, response) {
                                                                             const pdf = res.body;
                                                                             return response.status(200).json({
                                                                                 message: 'success',
-                                                                                pdf: pdf
                                                                             });
+                                                                            jasminAux.sendPDF(email, pdf);
                                                                         }
                                                                         else{
                                                                             return response.status(400).json({
@@ -218,8 +218,8 @@ function registarCompra(request, response) {
                                                                     const pdf = res.body;
                                                                     return response.status(200).json({
                                                                         message: 'success',
-                                                                        pdf: pdf
                                                                     });
+                                                                    jasminAux.sendPDF(email, pdf);
                                                                 }
                                                                 else{
                                                                     return response.status(400).json({
@@ -274,10 +274,7 @@ function enviarPDFEmail(request, response){
     const email = request.body.email;
     const pdf = request.body.email;
 
-    jasminAux.sendPDF(email, pdf);
-    return response.status(200).json({
-        message: 'success'
-    });
+    
 }
 
 function consumirSenha(request, response){

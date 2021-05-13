@@ -426,7 +426,6 @@ function sendPDF(email, pdf) {
             console.log('Message sent: ' + info.response);
         };
     });
-
 }
 
 module.exports = {
