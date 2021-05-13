@@ -12,6 +12,7 @@ router.get('/Hubspot/getClient/:email', controllerhubspot.getClient);
 //JASMIN
 router.post('/Jasmin/registarCompra', controllerJasmin.registarCompra);
 router.get('/Jasmin/consumirSenha/:email', controllerJasmin.consumirSenha);
+router.post('/Jasmin/EnviarPDF', controllerJasmin.enviarPDFEmail);
 
 //MOLONI
 router.post('/Moloni/registarEncomenda', controllerMoloni.registarEncomenda);

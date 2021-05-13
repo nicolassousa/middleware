@@ -113,9 +113,9 @@ function registarCompra(request, response) {
                                                                     jasminAux.getPDFDocument(access_token, idFatura,(res) => {
                                                                         if(res.statusCode == 200){
                                                                             const pdf = res.body;
-                                                                            jasminAux.sendPDF(email, pdf);
                                                                             return response.status(200).json({
-                                                                                message: 'success'
+                                                                                message: 'success',
+                                                                                pdf: pdf
                                                                             });
                                                                         }
                                                                         else{
@@ -216,9 +216,9 @@ function registarCompra(request, response) {
                                                             jasminAux.getPDFDocument(access_token, idFatura,(res) => {
                                                                 if(res.statusCode == 200){
                                                                     const pdf = res.body;
-                                                                    jasminAux.sendPDF(email, pdf);
                                                                     return response.status(200).json({
-                                                                        message: 'success'
+                                                                        message: 'success',
+                                                                        pdf: pdf
                                                                     });
                                                                 }
                                                                 else{
@@ -270,6 +270,13 @@ function registarCompra(request, response) {
     })
 }
 
+function enviarPDFEmail(request, response){
+    const email = request.body.email;
+    const pdf = request.body.email;
+
+    jasminAux.sendPDF(email, pdf);
+}
+
 function consumirSenha(request, response){
     var path = require('path');
     const email = request.params.email;
@@ -295,5 +302,6 @@ function consumirSenha(request, response){
 
 module.exports = {
     registarCompra: registarCompra,
+    enviarPDFEmail: enviarPDFEmail,
     consumirSenha: consumirSenha
 }
