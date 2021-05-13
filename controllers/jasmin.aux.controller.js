@@ -378,7 +378,7 @@ function getPDFDocument(access_token, idFatura, callback) {
     })
 }
 
-function sendPDF(email, pdf, callback) {
+function sendPDF(email, pdf) {
     var transporter = nodemailer.createTransport({
         service: 'Gmail',
         auth: {
@@ -418,22 +418,17 @@ function sendPDF(email, pdf, callback) {
             }
         ]
     };
-    const DELAY = 3*1000 // secs * milliseconds
-
-    callback({
-        statusCode: 200
-    });
-
+    const DELAY = 10*1000 // secs * milliseconds
+    console.log("entrei");
       setTimeout(function(){
         transporter.sendMail(mailOptions, (error, info) => {
           if (error) 
             console.log('Mail failed!! :(')
           else
             console.log('Mail sent to ' + mailOptions.to)
-        }),
+        })},
         DELAY
-    });
-   
+    );
 }
 
 module.exports = {

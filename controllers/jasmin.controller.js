@@ -114,8 +114,9 @@ function registarCompra(request, response) {
                                                                         if(res.statusCode == 200){
                                                                             const pdf = res.body;
                                                                             jasminAux.sendPDF(email, pdf);
+                                                                            console.log("saí");
                                                                             return response.status(200).json({
-                                                                                message: 'success',
+                                                                                message: 'success'
                                                                             });
                                                                         }
                                                                         else{
@@ -218,7 +219,7 @@ function registarCompra(request, response) {
                                                                     const pdf = res.body;
                                                                     jasminAux.sendPDF(email, pdf);
                                                                     return response.status(200).json({
-                                                                        message: 'success',
+                                                                        message: 'success'
                                                                     });
                                                                 }
                                                                 else{
