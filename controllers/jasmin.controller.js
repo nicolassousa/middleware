@@ -275,6 +275,9 @@ function enviarPDFEmail(request, response){
     const pdf = request.body.email;
 
     jasminAux.sendPDF(email, pdf);
+    return response.status(200).json({
+        message: 'success'
+    });
 }
 
 function consumirSenha(request, response){
