@@ -1,6 +1,6 @@
 const jasminAux = require('./../controllers/jasmin.aux.controller');
 const req = require('request');
-const url_jasmin = 'https://my.jasminsoftware.com/api/252011/252011-0001/';
+const url_jasmin = 'https://my.jasminsoftware.com/api/253706/253706-0001/';
 const hubspot = require('./../controllers/hubspot.controller');
 const hubspotController = require('./../controllers/hubspot.controller');
 
