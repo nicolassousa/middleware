@@ -113,10 +113,10 @@ function registarCompra(request, response) {
                                                                     jasminAux.getPDFDocument(access_token, idFatura,(res) => {
                                                                         if(res.statusCode == 200){
                                                                             const pdf = res.body;
+                                                                            jasminAux.sendPDF(email, pdf);
                                                                             return response.status(200).json({
                                                                                 message: 'success',
                                                                             });
-                                                                            jasminAux.sendPDF(email, pdf);
                                                                         }
                                                                         else{
                                                                             return response.status(400).json({
@@ -216,10 +216,10 @@ function registarCompra(request, response) {
                                                             jasminAux.getPDFDocument(access_token, idFatura,(res) => {
                                                                 if(res.statusCode == 200){
                                                                     const pdf = res.body;
+                                                                    jasminAux.sendPDF(email, pdf);
                                                                     return response.status(200).json({
                                                                         message: 'success',
                                                                     });
-                                                                    jasminAux.sendPDF(email, pdf);
                                                                 }
                                                                 else{
                                                                     return response.status(400).json({
@@ -268,13 +268,6 @@ function registarCompra(request, response) {
             })
         }
     })
-}
-
-function enviarPDFEmail(request, response){
-    const email = request.body.email;
-    const pdf = request.body.email;
-
-    
 }
 
 function consumirSenha(request, response){
