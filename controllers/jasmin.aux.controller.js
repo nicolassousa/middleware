@@ -258,7 +258,8 @@ function registarConsumo(access_token, callback) {
     const hora = data.getHours();
     const min = data.getMinutes();
     const sec = data.getSeconds();
-    const itemAdjustmentKey = ano + "_" + mes + "_" + dia + "_" + hora + "_" + min + "_" + sec;
+    const milisec = data.getMilliseconds();
+    const itemAdjustmentKey = mes + "_" + dia + "_" + hora + "_" + min + "_" + sec + "_" + milisec;
     const documentDate = new Date().toISOString();
     const postingDate = new Date().toISOString();
     const warehouse = '01';
@@ -300,7 +301,8 @@ function registarConsumo(access_token, callback) {
         const hora = data.getHours();
         const min = data.getMinutes();
         const sec = data.getSeconds();
-        const itemAdjustmentKey = ano + "_" + mes + "_" + dia + "_" + hora + "_" + min + "_" + sec;
+        const milisec = data.getMilliseconds();
+        const itemAdjustmentKey = mes + "_" + dia + "_" + hora + "_" + min + "_" + sec + "_" + milisec;
         const documentDate = new Date().toISOString();
         const postingDate = new Date().toISOString();
         const warehouse = '01';
@@ -314,6 +316,7 @@ function registarConsumo(access_token, callback) {
             'materialsItem': 'SENHASGASTAS'
         }]
 
+
         let json = {
             'itemAdjustmentKey': itemAdjustmentKey,
             'documentDate': documentDate,
@@ -323,6 +326,8 @@ function registarConsumo(access_token, callback) {
             'adjustmentReason': adjustmentReason,
             'documentLines': documentLines
         }
+
+        console.log(json);
 
         let options = {
             headers: {
@@ -334,14 +339,19 @@ function registarConsumo(access_token, callback) {
             body: JSON.stringify(json)
         }
 
-        req.post(options, (err, res) => {
+        console.log(options);
 
+        req.post(options, (err, res) => {
             if (!err && res.statusCode == 201) {
+                console.log(res.statusCode);
+                console.log(res.body);
                 callback({
                     'statusCode': res.statusCode,
                     'body': "success"
                 });
             } else {
+                console.log(res.statusCode);
+                console.log(res.body);
                 callback({
                     'statusCode': res.statusCode,
                     'body': JSON.parse(res.body)
@@ -349,7 +359,6 @@ function registarConsumo(access_token, callback) {
             }
         })
     })
-
 }
 
 function getPDFDocument(access_token, idFatura, callback) {
